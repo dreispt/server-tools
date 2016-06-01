@@ -9,8 +9,12 @@ Improved Search
 This module extends the search functionality to add simple shortcuts for
 more complex search conditions.
 
-Features:
-* Fuzzy search: use wildcards ("%") in place of spaces
+At this moment only a type of fuzzy search is implemented:
+It matches records containing all the words in the expression searched for,
+regardless of their order.
+
+It is only available when specifically enabled,
+and is only implemented for the "contains" (`ilike`) operation.
 
 
 Installation
@@ -22,21 +26,22 @@ No specific requirements.
 Configuration
 =============
 
-No specific setup needed.
+To enable this feature on a view, the `{search_fuzzy_enable=True}` key
+must be set in the Context.
+Ususally this would be done on the Window Action responsible for opening
+the views where we want to enable this behaviour.
 
 
 Usage
 =====
 
-On any search box, in list or kanban views, type your expressions
-and the magic will be automatically done.
+Once enabled, on the view search box (list or kanban views), type words
+separated with spaces and the records containing all the typed
+words will be matched.
 
 For example, in a demo database, on the Contacts / Customers try searching
-for "john brown". With this module installed will see the result
-"John M. Brown", because of the fuzzy search feature.
-
-At this moment the extensions are only applied for 'ilike' operations, the default used
-by the search bar for text string fields.
+for " brown john" with this feature enabled, and the result "John M. Brown"
+will be seen.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
@@ -49,12 +54,11 @@ by the search bar for text string fields.
 Known issues / Roadmap
 ======================
 
-Additional serach tokens are welcome.
+There are more search improvements to implement:
+* Support operators, such as ">", "<", ".." (between interval), etc.
+* Support smart date tokens, such as "t" for today, "m" for current month, "ytd" for year to date.
 
-Some ideas:
-* ".." for intervals
-* Date tokens such as "t" for today
-
+The above can be implemented for all models, not requiring to be enabled by a context flag.
 
 Bug Tracker
 ===========

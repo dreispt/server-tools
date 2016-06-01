@@ -7,11 +7,26 @@ from openerp.tests.common import TransactionCase
 
 class SomethingCase(TransactionCase):
 
-    def test_SpaceReplacedByWildcard(self):
-        """Space is replaced by a wildcard"""
-        Partner = self.env['res.partner']
+    def setUp(self):
+        self.Partner = self.env['res.partner']
         # Johann Gambolputty  https://www.youtube.com/watch?v=UDPqB9i1ScY
-        Partner.create(
+        self.partner1 = self.Partner.create(
             {'name': 'Johann Gambolputty de von Ausfern Hautkopft of Ulm'})
-        res = Partner.search([('name', 'ilike', 'johann ausfern haut')])
-        self.assertEqual(len(res), 1)
+
+    def test_FuzzySearchDisabledByDefault(self):
+        """Fuzzy search is disabled by default"""
+        res = self.Partner.search(
+            [('name', 'ilike', 'ausfern haut johann')])
+        self.assertFalse(res)
+
+    def test_FuzzyMatchesContainingWords(self):
+        """Fuzzy search finds matches containing the words"""
+        res = self.Partner.with_context(search_fuzzy_enabled=True).search(
+            [('name', 'ilike', 'ausfern haut johann')])
+        self.assertTrue(res)
+
+    def test_FuzzyMatchesMustContaininAllWords(self):
+        """Fuzzy search matches must contain all words"""
+        res = self.Partner.with_context(search_fuzzy_enabled=True).search(
+            [('name', 'ilike', 'ausfern haut johann eric')])
+        self.assertFalse(res)
